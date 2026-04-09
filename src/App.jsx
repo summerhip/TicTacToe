@@ -255,65 +255,122 @@ function App() {
 
   if (!gameStarted) {
     return (
-      <div className="game">
-        <h1>Tic Tac Toe</h1>
-        <form className="name-form" onSubmit={handleStartGame}>
-          <h2>Enter Player Names</h2>
-          <div className="input-group">
-            <label htmlFor="player1">Player 1 (X):</label>
-            <input
-              id="player1"
-              type="text"
-              value={player1Name}
-              onChange={(e) => setPlayer1Name(e.target.value)}
-              placeholder="Enter name"
-              maxLength={20}
-              required
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="player2">Player 2 (O):</label>
-            <input
-              id="player2"
-              type="text"
-              value={player2Name}
-              onChange={(e) => setPlayer2Name(e.target.value)}
-              placeholder="Enter name"
-              maxLength={20}
-              required={!isAIMode}
-              disabled={isAIMode}
-            />
-          </div>
-          <div className="ai-option">
-            <label className="ai-checkbox">
+      <div className="game intro-screen">
+        <div className="intro-title-panel">
+          <h1>
+            Tic
+            <br />
+            Tac
+            <br />
+            Toe
+          </h1>
+          <p className="intro-subtitle">Two-player strategy</p>
+        </div>
+        <div className="intro-form-panel">
+          <form className="name-form" onSubmit={handleStartGame}>
+            <h2>Who's playing?</h2>
+            <div className="input-group">
+              <label htmlFor="player1">Player One — X</label>
               <input
-                type="checkbox"
-                checked={isAIMode}
-                onChange={(e) => {
-                  setIsAIMode(e.target.checked);
-                  if (e.target.checked) {
-                    setPlayer2Name("");
-                  }
-                }}
+                id="player1"
+                type="text"
+                value={player1Name}
+                onChange={(e) => setPlayer1Name(e.target.value)}
+                placeholder="Enter name"
+                maxLength={20}
+                required
               />
-              <span>🤖 Play against BOT</span>
-            </label>
-          </div>
-          <button type="submit" className="start-button">
-            Start Game
-          </button>
-        </form>
+            </div>
+            <div className="input-group">
+              <label htmlFor="player2">Player Two — O</label>
+              <input
+                id="player2"
+                type="text"
+                value={player2Name}
+                onChange={(e) => setPlayer2Name(e.target.value)}
+                placeholder="Enter name"
+                maxLength={20}
+                required={!isAIMode}
+                disabled={isAIMode}
+              />
+            </div>
+            <div className="ai-option">
+              <label className="ai-checkbox">
+                <input
+                  type="checkbox"
+                  checked={isAIMode}
+                  onChange={(e) => {
+                    setIsAIMode(e.target.checked);
+                    if (e.target.checked) {
+                      setPlayer2Name("");
+                    }
+                  }}
+                />
+                <span>Play against BOT</span>
+              </label>
+            </div>
+            <button type="submit" className="start-button">
+              Start Game
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
 
   return (
     <div className={`game ${shake ? "shake" : ""}`}>
-      <h1>Tic Tac Toe</h1>
-      <button className="reverse-button" onClick={toggleReverseMode}>
-        {reverseMode ? "🔄 REVERSE MODE" : "🎯 NORMAL MODE"}
-      </button>
-      {showTie && <div className="tie-announcement">🤝 TIE! 🤝</div>}
+      <div className="game-layout">
+        <aside className="game-sidebar">
+          <h1>
+            Tic
+            <br />
+            Tac
+            <br />
+            Toe
+          </h1>
+          <div className="player-indicators">
+            <div
+              className={`player-indicator ${isXNext && !gameOver ? "active" : ""}`}
+            >
+              <span className="player-mark x-mark">X</span>
+              <span className="player-name">{player1Name}</span>
+            </div>
+            <div
+              className={`player-indicator ${!isXNext && !gameOver ? "active" : ""}`}
+            >
+              <span className="player-mark o-mark">O</span>
+              <span className="player-name">{player2Name}</span>
+            </div>
+          </div>
+          <div className="status">{status}</div>
+          <div className="sidebar-actions">
+            <button className="reset-button" onClick={resetGame}>
+              Reset
+            </button>
+            <button className="reverse-button" onClick={toggleReverseMode}>
+              {reverseMode ? "Reverse ON" : "Normal"}
+            </button>
+          </div>
+          {reverseMode && (
+            <p className="mode-description">Avoid 3 in a row to win!</p>
+          )}
+        </aside>
+        <main className="game-main">
+          <div className="board">
+            {board.map((value, index) => (
+              <button
+                key={index}
+                className={`square ${value ? "filled" : ""} ${value === "X" ? "mark-x" : ""} ${value === "O" ? "mark-o" : ""}`}
+                onClick={() => handleClick(index)}
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+        </main>
+      </div>
+      {showTie && <div className="tie-announcement">Draw!</div>}
       {showConfetti && (
         <div className="confetti-container">
           {[...Array(50)].map((_, i) => (
@@ -330,29 +387,7 @@ function App() {
         </div>
       )}
       {winner && showConfetti && (
-        <div className="winner-announcement">
-          🎊 {getPlayerName(winner)} Wins! 🎊
-        </div>
-      )}
-      <div className="status">{status}</div>
-      <div className="board">
-        {board.map((value, index) => (
-          <button
-            key={index}
-            className={`square ${value ? "filled" : ""}`}
-            onClick={() => handleClick(index)}
-          >
-            {value}
-          </button>
-        ))}
-      </div>
-      <button className="reset-button" onClick={resetGame}>
-        New Game
-      </button>
-      {reverseMode && (
-        <p className="mode-description">
-          ⚠️ Reverse Mode: Avoid getting 3 in a row!
-        </p>
+        <div className="winner-announcement">{getPlayerName(winner)} Wins!</div>
       )}
     </div>
   );
